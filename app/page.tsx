@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Image from "next/image";
 
 export default function Home() {
@@ -23,7 +24,7 @@ export default function Home() {
           />
         </div>
        </div>
-       <div className="bg-black h-32">hello</div>
+       <div className="bg-black h-32 flex"><Footer/></div>
       </div>
     </div>
   );

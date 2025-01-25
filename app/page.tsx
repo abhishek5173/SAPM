@@ -1,7 +1,15 @@
 import Footer from "@/components/Footer";
 import Image from "next/image";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(NEXT_AUTH_CONFIG);
+
+  if (session) {
+    redirect("/dashboard");
+  }
   return (
     <div className="h-screen w-screen overflow-hidden">
       <div className=" h-[calc(100vh-3.5rem)] ">

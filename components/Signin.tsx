@@ -1,5 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation";
+import { signIn } from 'next-auth/react';
 
 export default function Signin() {
     const router = useRouter();
@@ -36,7 +37,15 @@ export default function Signin() {
           />
         </div>
 
-        <button className="w-full p-3 bg-white/45 text-green-600 font-medium rounded-md hover:bg-green-700 hover:text-white transition duration-500">
+        <button onClick={async () => {
+            const res = await signIn("credentials", {
+                username: "",
+                password: "",
+                redirect: false,
+            });
+            console.log(res);
+            router.push("/")
+        }} className="w-full p-3 bg-white/45 text-green-600 font-medium rounded-md hover:bg-green-700 hover:text-white transition duration-500">
           Log In
         </button>
 
@@ -46,7 +55,8 @@ export default function Signin() {
           <div className="w-full h-px bg-white/40"></div>
         </div>
 
-        <button className="w-full p-3 bg-white text-black rounded-md flex items-center justify-center gap-2 hover:bg-gray-200 transition">
+        <button onClick={async () => {
+            await signIn("google");}} className="w-full p-3 bg-white text-black rounded-md flex items-center justify-center gap-2 hover:bg-gray-200 transition">
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"
             alt="Google Icon"

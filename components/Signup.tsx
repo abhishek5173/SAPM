@@ -1,21 +1,22 @@
 "use client"
 import { useRouter } from "next/navigation";
+import { signIn } from 'next-auth/react';
 
 export default function Signup() {
     const router = useRouter();
   return (
-    <div className="h-2/3 w-1/3 bg-green-600 rounded-3xl flex justify-center items-center">
-      <div className="w-3/4">
-        <div className="text-white font-bold text-5xl text-center mb-8">
+    <div className="h-screen w-full flex justify-center items-center bg-green-600 p-4">
+      <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-lg">
+        <div className="text-green-600 font-bold text-3xl sm:text-4xl text-center mb-4 sm:mb-6">
           Sign Up
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="Email" className="text-white block mb-2">
+        <div className="mb-4 sm:mb-6">
+          <label htmlFor="Email" className="text-green-600 block mb-2">
             Email
           </label>
           <input
-            className="w-full p-3 bg-black/15 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+            className="w-full p-2 sm:p-3 bg-gray-100 text-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
             type="email"
             name="Email"
             id="Email"
@@ -23,12 +24,12 @@ export default function Signup() {
           />
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="Password" className="text-white block mb-2">
+        <div className="mb-4 sm:mb-6">
+          <label htmlFor="Password" className="text-green-600 block mb-2">
             Password
           </label>
           <input
-            className="w-full p-3 bg-black/15 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+            className="w-full p-2 sm:p-3 bg-gray-100 text-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
             type="password"
             name="Password"
             id="Password"
@@ -36,28 +37,29 @@ export default function Signup() {
           />
         </div>
 
-        <button className="w-full p-3 bg-white/45 text-green-600 font-medium rounded-md hover:bg-green-700 hover:text-white transition duration-500">
+        <button className="w-full p-2 sm:p-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition duration-300">
           Sign Up
         </button>
 
-        <div className="my-6 flex items-center">
-          <div className="w-full h-px bg-white/40"></div>
-          <span className="px-4 text-white">or</span>
-          <div className="w-full h-px bg-white/40"></div>
+        <div className="my-4 sm:my-6 flex items-center">
+          <div className="w-full h-px bg-gray-300"></div>
+          <span className="px-2 sm:px-4 text-gray-500">or</span>
+          <div className="w-full h-px bg-gray-300"></div>
         </div>
 
-        <button className="w-full p-3 bg-white text-black rounded-md flex items-center justify-center gap-2 hover:bg-gray-200 transition">
+        <button onClick={async () => {
+            await signIn("google");}} className="w-full p-2 sm:p-3 bg-white text-green-600 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100 transition">
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"
             alt="Google Icon"
-            className="w-5 h-5"
+            className="w-4 h-4 sm:w-5 sm:h-5"
           />
-          SignUp with Google
+          Sign Up with Google
         </button>
         <div className="w-full flex justify-center items-center">
-          <button onClick={() => router.push('/')} className="w-20 p-3 bg-white/45 text-green-600 font-medium rounded-3xl hover:bg-green-700 hover:text-white transition duration-500 mt-5 flex justify-center">
+          <button onClick={() => router.push('/')} className="w-20 p-3 bg-green-600 text-white font-medium rounded-3xl hover:bg-green-700 transition duration-300 mt-5 flex justify-center">
             <svg
-              className="h-8 w-8 text-gray-700"
+              className="h-8 w-8"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

@@ -35,7 +35,7 @@ export default function Navbar() {
   return (
     <div className="sticky z-[100] h-14 inset-x-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg flex justify-center items-center">
       <div className="flex justify-between items-center w-5/6">
-        <div className="flex justify-center items-center gap-4">
+        <div className="flex sm:justify-center items-center gap-4 ">
           <button
             onClick={handlehomeredirect}
             className="h-10 w-10 bg-green-600 rounded-full flex justify-center items-center"

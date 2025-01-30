@@ -16,14 +16,14 @@ export default function Navbar() {
   };
 
   const handlehomeredirect = async () => {
-    const currentPath = window.location.pathname; // Get current path (e.g., /dashboard/admin)
+    const currentPath = window.location.pathname;
 
     if (session) {
       if (currentPath.startsWith("/dashboard")) {
         router.push("/dashboard");
       }
     } else {
-      // If no session, redirect to the home page
+      
       router.push("/");
     }
   };

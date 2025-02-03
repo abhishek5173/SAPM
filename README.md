@@ -88,3 +88,33 @@ data && data.map((item,index)=>(
 } iske liye index key iski uniqueness ke liye aur .map se new array create hogi aur jo callback diye hai item aur index unki help se array item access honge then name ki aur rice ki value pass kr payenge item.NAME item.PRICE
 ))
 )}
+
+
+
+---------------------------------------------------------------------yha se new authentication-------------------
+
+https://www.youtube.com/watch?v=bicCg4GxOP8
+
+1- db install db folder
+2- npm prisma install
+3- npx prisma init - schema.prisma
+4- model user 
+5- npx prisma migrate dev --name init
+6- npx prisma generate
+7- singleton client in lib-db.ts
+8- creating a register user api - api/user/route.ts zod validation added
+9- creating signup frontend - page.tsx yha pr zod validation
+
+------------------------------------------------------------yha se working for sign in form------------------------
+1- npm install next-auth
+2- api/auth/[...nextauth] - route.ts creating a handler
+3- lib - auth.ts
+4- credentials provider fro docs then pages-auth/signin to use custom signin page
+5- npm i @next-auth/prisma-adapter
+6- adapter in auth.ts
+7- credentials provider configure - authorize function ko configure
+8- signin component - zod validation 
+9- handlesignin function and also added error and loading 
+10- session adding with secret in auth.ts
+11-after this here we add callbACKS which are added to configure session what session is returning (ex- adding username to session return)
+12- also add middleware.ts

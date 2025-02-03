@@ -1,8 +1,47 @@
 "use client"
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { signIn } from 'next-auth/react';
+import { z } from "zod";
+import axios from "axios";
+
+const signupschema = z.object({
+  email : z.string().email("Invalid email address").min(1, "Email is too short"),
+  username: z.string().min(1, "Username is Required").max(20, "Username is too long"),
+  password : z.string().min(8, "Password is too short").min(1, "Password is Required")
+})
 
 export default function Signup() {
+  const [email,setemail] = useState("");
+  const [password,setpassword] = useState("");
+  const [username,setusername] = useState("");
+  const [error,seterror] = useState("");
+  const [loading,setloading] = useState(false);
+
+  const handlesignup = async () => {
+    seterror("");
+    setloading(true);
+
+    const validation = signupschema.safeParse({email,password,username});
+
+    if(!validation.success){
+      seterror(validation.error.errors[0].message);
+      setloading(false);
+      return;
+    }
+
+    try {
+      const res = await axios.post("/api/user", {email,password,username});
+      alert("Account Created Successfully. Please Login to continue.");
+      router.push("/signin")
+    } catch (err:any) {
+      seterror(err.response?.data?.error || "Something went wrong. Please try again."); 
+    }
+    finally{
+      setloading(false);
+    }
+  }
+
     const router = useRouter();
   return (
     <div className="h-screen w-full flex justify-center items-center bg-green-600 p-4">
@@ -11,6 +50,25 @@ export default function Signup() {
           Sign Up
         </div>
 
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        <div className="mb-4 sm:mb-6">
+          <label htmlFor="Email" className="text-green-600 block mb-2">
+            Username
+          </label>
+          <input
+            className="w-full p-2 sm:p-3 bg-gray-100 text-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+            type="string"
+            name="username"  
+            id="username"
+            placeholder="Enter your Username"
+            onChange={(e) => setusername(e.target.value)}
+          />
+        </div>
+
+
+
+
         <div className="mb-4 sm:mb-6">
           <label htmlFor="Email" className="text-green-600 block mb-2">
             Email
@@ -18,9 +76,10 @@ export default function Signup() {
           <input
             className="w-full p-2 sm:p-3 bg-gray-100 text-green-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
             type="email"
-            name="Email"
+            name="Email"  
             id="Email"
             placeholder="Enter your email"
+            onChange={(e) => setemail(e.target.value)}
           />
         </div>
 
@@ -34,11 +93,12 @@ export default function Signup() {
             name="Password"
             id="Password"
             placeholder="Enter your password"
+            onChange={(e) => setpassword(e.target.value)}
           />
         </div>
 
-        <button className="w-full p-2 sm:p-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition duration-300">
-          Sign Up
+        <button disabled={loading} onClick={handlesignup} className="w-full p-2 sm:p-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition duration-300">
+        {loading ? "Signing Up..." : "Sign Up"}
         </button>
 
         <div className="my-4 sm:my-6 flex items-center">

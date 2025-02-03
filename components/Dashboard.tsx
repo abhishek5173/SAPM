@@ -1,6 +1,12 @@
+"use client"
+import { useSession } from "next-auth/react";
+
 export default function Dashboard() {
+  const { data: session } = useSession();
   return (
+    
     <div className="min-h-screen w-full p-6 bg-gray-100 overflow-auto">
+      <h1 className="text-2xl font-bold text-gray-800 mb-2">Welcome {session?.user?.username ?? "Guest"} </h1>
       {/* First Grid - Responsive Widgets */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div className="bg-green-600 p-8 sm:p-12 rounded-xl shadow">

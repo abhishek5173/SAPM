@@ -1,56 +1,67 @@
+import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { db } from './db';
+import { compare } from 'bcrypt';
 
-export const NEXT_AUTH_CONFIG = {
-    providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
-        }),
-      CredentialsProvider({
-          name: 'Credentials',
-          credentials: {
-            username: { label: 'email', type: 'text', placeholder: '' },
-            password: { label: 'password', type: 'password', placeholder: '' },
-          },
-          async authorize(credentials: any) {
-  
-              return {
-                  id: "1",
-                  name: "Abhishek",
-                  userId: "1",
-                  email: "ramdomEmail"
-              };
-          },
-        }),
-    ],
-    secret: process.env.NEXTAUTH_SECRET,
-    session: {
-        strategy: "jwt" as const,  // Correct type usage
+export const NEXT_AUTH_CONFIG: NextAuthOptions = {
+  adapter: PrismaAdapter(db),
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: '/signin',
+  },
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "abhishek@gmail.com" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials, req) {
 
-      },
-      callbacks: {
-        async session({ session, token, user } : {
-            session:any, token:any ,user:any
-        }) {
-          // Check if the session has a user object
-          if (session.user) {
-            // Use the token's sub (which is the user ID) if available
-            session.user.id = token.sub || user.id;
-          }
-          return session;
-        },
-        async jwt({ token, user } : {
-            token:any , user:any
-        }) {
-          // Persist the user ID to the token
-          if (user) {
-            token.sub = user.id;
-          }
-          return token;
-        },
-      },
-    pages: {
-        signIn: '/signin',
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        } 
+        const existinguser = await db.user.findFirst({
+          where: {
+            email: credentials?.email,
+          },
+        });
+        if(!existinguser){
+          return null
+        }
+        const passwordMatch = await compare(credentials.password, existinguser.password);
+      if (!passwordMatch) {
+        return null;
+      }
+      return{
+        id: `${existinguser.id}`,
+        username: existinguser.username,
+        email: existinguser.email
+      }
     }
+    }),
+  ],
+  callbacks: {
+    async jwt ({token, user}) {
+      if (user) {
+        token.username = user.username;
+      }
+      return token;
+    },
+    async session({session, token}){
+      return{
+        ...session,
+        user:{
+          ...session.user,
+          username : token.username,
+        }
+      }
+      return session
+    },
+  }
   }

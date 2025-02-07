@@ -1,116 +1,62 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Portfolio() {
-  // Define sectors with stocks categorized by market cap
-  const sectorsWithStocks: { [key: string]: { [key: string]: string[] } } = {
-    IT: {
-      Large: ["TCS", "Infosys", "Wipro"],
-      Mid: ["Mindtree", "LTI", "Coforge"],
-      Small: ["Zensar", "Mastek", "Happiest Minds"],
-    },
-    Finance: {
-      Large: ["HDFC Bank", "ICICI Bank", "Kotak Mahindra Bank"],
-      Mid: ["Canara Bank", "IDFC First Bank", "RBL Bank"],
-      Small: ["Ujjivan Small Finance", "Equitas Bank", "AU Small Finance"],
-    },
-    Pharma: {
-      Large: ["Sun Pharma", "Dr. Reddy's", "Cipla"],
-      Mid: ["Lupin", "Glenmark", "Torrent Pharma"],
-      Small: ["Aarti Drugs", "Caplin Point", "Eris Lifesciences"],
-    },
-  };
+  const [sectorsWithStocks, setSectorsWithStocks] = useState<{ [key: string]: string[] }>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // List of all sectors
-  const allSectors = ["IT", "Finance", "Pharma"];
+  useEffect(() => {
+    axios
+      .get(
+        "https://script.googleusercontent.com/macros/echo?user_content_key=XFbb6r627vwBTWNdOBTDSeL0KQYrq-qcZ0yIS5VE0LD8_JG-uOkhsq1LRatZHjruHVpn2SVehCYxvoEZrqEn2wGPG-hQxknYm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnO7vxK_gh2q46FW8N6O32tMyaCbTi7OtvoWObHj5wLmMqVHJHpcJNUK0vEe8zNmHvhl9PhPIIbUVdk4NPkHSl66Y6h1Fe1rV9dz9Jw9Md8uu&lib=MfEcSXofpCfK_wuKbVXUkRi91h4gJfZU7"
+      )
+      .then((response) => {
+        const transformedData: { [key: string]: string[] } = {};
 
-  // State to track selected cap category and quantity
-  const [selectedCaps, setSelectedCaps] = useState<{ [key: string]: string }>({});
-  const [selectedStocks, setSelectedStocks] = useState<{ [key: string]: { stock: string; quantity: number } }>({});
+        response.data.data.forEach((item: { Sector: string; Stock: string }) => {
+          transformedData[item.Sector] = transformedData[item.Sector] || [];
+          transformedData[item.Sector].push(item.Stock);
+        });
 
-  // Handle cap category selection
-  const handleCapSelect = (sector: string, cap: string) => {
-    setSelectedCaps((prev) => ({ ...prev, [sector]: cap }));
-  };
+        setSectorsWithStocks(transformedData);
+        console.log(transformedData);
+      })
+      .catch((err) => setError("Failed to fetch data"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Handle stock quantity selection
-  const handleStockQuantityChange = (sector: string, stock: string, quantity: number) => {
-    setSelectedStocks((prev) => ({
-      ...prev,
-      [`${sector}-${stock}`]: { stock, quantity },
-    }));
-  };
+  if (loading) return <div className="text-center text-xl font-bold">Loading...</div>;
+  if (error) return <div className="text-center text-red-600">Error: {error}</div>;
 
   return (
     <div className="flex flex-col justify-center items-center w-full overflow-auto">
-      {/* Stocks & Sector Section */}
       <div className="w-full min-h-screen bg-white flex flex-col items-center py-10">
         <h1 className="text-green-600 font-bold text-xl sm:text-3xl text-center mb-6">
           Available Stocks & Sectors
         </h1>
-
-        {/* Grid for Stocks and Sectors */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 w-full max-w-7xl">
-          {allSectors.map((sector, index) => (
+          {Object.keys(sectorsWithStocks).map((sector, index) => (
             <div
               key={index}
               className="flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg w-full"
             >
               <label className="font-semibold text-sm sm:text-lg mb-2">{sector}</label>
-
-              {/* Cap Selection Dropdown */}
-              <select
-                className="p-2 border rounded-md w-full bg-white mb-2"
-                defaultValue=""
-                onChange={(e) => handleCapSelect(sector, e.target.value)}
-              >
+              <select className="p-2 border rounded-md w-full bg-white" defaultValue="">
                 <option value="" disabled>
-                  Select Cap Category
+                  Select a stock
                 </option>
-                {Object.keys(sectorsWithStocks[sector]).map((cap) => (
-                  <option key={cap} value={cap}>
-                    {cap} Cap
+                {sectorsWithStocks[sector]?.map((stock, idx) => (
+                  <option key={idx} value={stock}>
+                    {stock}
                   </option>
                 ))}
               </select>
-
-              {/* Stock Selection Dropdown */}
-              {selectedCaps[sector] && (
-                <div className="w-full">
-                  <select
-                    className="p-2 border rounded-md w-full bg-white mb-2"
-                    defaultValue=""
-                    onChange={(e) => handleStockQuantityChange(sector, e.target.value, 1)}
-                  >
-                    <option value="" disabled>
-                      Select a Stock
-                    </option>
-                    {sectorsWithStocks[sector][selectedCaps[sector]].map((stock, idx) => (
-                      <option key={idx} value={stock}>
-                        {stock}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Quantity Input */}
-                  {selectedStocks[`${sector}-${selectedStocks[`${sector}-${selectedCaps[sector]}`]?.stock}`] && (
-                    <input
-                      type="number"
-                      min="1"
-                      className="p-2 border rounded-md w-full bg-white"
-                      placeholder="Quantity"
-                      value={selectedStocks[`${sector}-${selectedStocks[`${sector}-${selectedCaps[sector]}`]?.stock}`]?.quantity || ""}
-                      onChange={(e) =>
-                        handleStockQuantityChange(sector, selectedStocks[`${sector}-${selectedCaps[sector]}`]?.stock, Number(e.target.value))
-                      }
-                    />
-                  )}
-                </div>
-              )}
             </div>
           ))}
         </div>
+        <div><button className="bg-green-600 p-2 text-white font-semibold rounded-2xl">Your Cart</button></div>
       </div>
     </div>
   );

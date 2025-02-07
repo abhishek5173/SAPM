@@ -12,9 +12,13 @@ export default function Dashside() {
             <Home className="text-2xl" />
             <span className="hidden sm:inline-block text-lg">Home</span>
           </Link>
-          <Link className="flex flex-col sm:flex-row gap-4 items-center text-white font-semibold p-4 rounded-xl hover:bg-green-600/75 hover:scale-105 transition-transform duration-300 ease-in-out shadow-md" href='/dashboard/bookingform'>
+          <Link className="flex flex-col sm:flex-row gap-4 items-center text-white font-semibold p-4 rounded-xl hover:bg-green-600/75 hover:scale-105 transition-transform duration-300 ease-in-out shadow-md" href='/dashboard/create'>
             <FilePlus2 className="text-2xl" />
             <span className="hidden sm:inline-block text-lg">Create Portfolio</span>
+          </Link>
+          <Link className="flex flex-col sm:flex-row gap-4 items-center text-white font-semibold p-4 rounded-xl hover:bg-green-600/75 hover:scale-105 transition-transform duration-300 ease-in-out shadow-md" href='/dashboard/myportfolio'>
+            <FilePlus2 className="text-2xl" />
+            <span className="hidden sm:inline-block text-lg">My Portfolio</span>
           </Link>
           
         </div>

@@ -7,9 +7,5 @@ html, body {
   padding: 0;
 }
 
-@media (min-width: 768px) { 
-  html, body {
-    overflow: hidden;
-  }
-}
+
   

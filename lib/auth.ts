@@ -24,7 +24,7 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
       async authorize(credentials, req) {
 
         if (!credentials?.email || !credentials?.password) {
-          return null
+          throw new Error('Please enter your email and password');
         } 
         const existinguser = await db.user.findFirst({
           where: {
@@ -32,11 +32,11 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
           },
         });
         if(!existinguser){
-          return null
+          throw new Error('No user found with this email');
         }
         const passwordMatch = await compare(credentials.password, existinguser.password);
       if (!passwordMatch) {
-        return null;
+        throw new Error('Password is incorrect');
       }
       return{
         id: `${existinguser.id}`,

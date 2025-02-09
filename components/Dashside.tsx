@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation";
-import { Home, FilePlus2 } from "lucide-react";
+import { Home, FilePlus2, AlignHorizontalDistributeCenter } from "lucide-react";
 import Link from "next/link";
 
 export default function Dashside() {
@@ -17,7 +17,7 @@ export default function Dashside() {
             <span className="hidden sm:inline-block text-lg">Create Portfolio</span>
           </Link>
           <Link className="flex flex-col sm:flex-row gap-4 items-center text-white font-semibold p-4 rounded-xl hover:bg-green-600/75 hover:scale-105 transition-transform duration-300 ease-in-out shadow-md" href='/dashboard/myportfolio'>
-            <FilePlus2 className="text-2xl" />
+            <AlignHorizontalDistributeCenter className="text-2xl" />
             <span className="hidden sm:inline-block text-lg">My Portfolio</span>
           </Link>
           

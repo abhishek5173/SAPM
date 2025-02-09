@@ -14,10 +14,30 @@ datasource db {
 }
 
 model User {
-  id       Int   @id @default(autoincrement())
-  email   String @unique
-  username String @unique
-  password String
-  createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  username   String      @unique
+  password   String
+  createdAt  DateTime    @default(now())
+  updateAt   DateTime    @updatedAt
+  portfolios Portfolio[]
+}
+
+model Portfolio {
+  id         String           @id @default(uuid())
+  name       String
+  totalPrice Float
+  createdAt  DateTime         @default(now())
+  userId     Int
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stocks     PortfolioStock[]
+}
+
+model PortfolioStock {
+  id          String    @id @default(uuid())
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  portfolioId String
+  stockName   String
+  price       Float
+  quantity    Int
 }

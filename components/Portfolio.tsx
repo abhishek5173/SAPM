@@ -115,7 +115,25 @@ export default function Portfolio() {
   };
 
   if (loading)
-    return <div className="text-center text-xl font-bold">Loading...</div>;
+    return (
+      <div className="flex flex-col justify-center items-center w-full overflow-auto">
+        <div className="w-full min-h-screen bg-white flex flex-col items-center py-10">
+          <div className="h-8 w-64 bg-gray-300 rounded animate-pulse mb-6"></div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 w-full max-w-7xl">
+            {Array(10).fill(0).map((_, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg w-full"
+              >
+                <div className="h-6 w-24 bg-gray-300 rounded animate-pulse mb-2"></div>
+                <div className="h-10 w-full bg-gray-300 rounded-md animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+          <div className="h-10 w-40 bg-gray-300 rounded-2xl animate-pulse mt-4"></div>
+        </div>
+      </div>
+    );
   if (error)
     return <div className="text-center text-red-600">Error: {error}</div>;
 

@@ -67,16 +67,16 @@ export default function MyPortfolio() {
           : portfolio.map((p) => (
               <motion.div
                 key={p.id}
-                className="bg-white border border-green-600 shadow-md rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-transform transform hover:scale-105"
+                className="bg-white border border-green-600 shadow-md rounded-lg p-2 flex justify-between items-center hover:shadow-lg transition-transform transform hover:scale-105"
                 whileHover={{ scale: 1.05 }}
               >
-                <h2 className="text-xl font-semibold text-green-700">
+                <h2 className="sm:text-xl text-sm font-semibold text-green-700 text-wrap">
                   {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
                 </h2>
-                <p className="text-lg text-gray-700 mt-2">
-                  💰 <span className="font-bold">₹{p.totalPrice}</span>
+                <p className="sm:text-lg text-sm text-gray-700">
+                   <span className="font-bold">₹{p.totalPrice}</span>
                 </p>
-                <button className="p-2 bg-red-700/90 rounded-2xl text-white font-semibold mt-2" onClick={()=>handledelete(p.id)}>Delete</button>
+                <button className="sm:p-2 p-1 text-sm sm:text-lg bg-red-700/90 rounded-2xl text-white font-semibold" onClick={()=>handledelete(p.id)}>Delete</button>
               </motion.div>
             ))}
       </div>

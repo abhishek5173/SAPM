@@ -22,7 +22,7 @@ export default function Portfolio() {
   const [selectedStocks, setSelectedStocks] = useState<SelectedStock[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [portfolioName, setPortfolioName] = useState<string>("");
-
+  const [selectKey, setSelectKey] = useState<number>(0);
   useEffect(() => {
     axios
       .get(
@@ -79,6 +79,7 @@ export default function Portfolio() {
   const resetSelections = () => {
     setSelectedStocks([]);
     setPortfolioName("");
+    setSelectKey((prev) => prev + 1);
   };
   const totalPrice = selectedStocks.reduce(
     (acc, s) => acc + s.price * s.quantity,
@@ -120,7 +121,7 @@ export default function Portfolio() {
         <div className="w-full min-h-screen bg-white flex flex-col items-center py-10">
           <div className="h-8 w-64 bg-gray-300 rounded animate-pulse mb-6"></div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 w-full max-w-7xl">
-            {Array(10).fill(0).map((_, index) => (
+            {Array(16).fill(0).map((_, index) => (
               <div
                 key={index}
                 className="flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg w-full"
@@ -153,6 +154,7 @@ export default function Portfolio() {
                 {sector}
               </label>
               <select
+              key={selectKey}
                 className="p-2 border rounded-md w-full bg-white"
                 onChange={(e) => handleStockSelect(e, sector)}
                 defaultValue=""
@@ -175,6 +177,9 @@ export default function Portfolio() {
         >
           Your Cart ({selectedStocks.length})
         </button>
+        <button onClick={()=>{
+          setSelectKey((prev) => prev + 1);
+        }} className="bg-gray-400 p-2 text-white font-semibold rounded-xl mt-2">RESET</button>
       </div>
 
       {isDialogOpen && (

@@ -98,15 +98,6 @@ export default function Navbar() {
               >
                 Sign Out
               </button>
-              <button
-                onClick={() => {
-                  router.push("/market");
-                  setMenuOpen(false);
-                }}
-                className="w-5/6 text-green-600 border-b py-2 hover:bg-green-700 hover:text-white transition duration-300"
-              >
-                Market
-              </button>
             </>
           ) : (
             <>

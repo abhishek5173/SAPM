@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(NEXT_AUTH_CONFIG);
- 
+
   try {
     const body = await req.json();
     const { name, totalPrice, selectedStocks } = body;
@@ -30,9 +30,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, portfolio: newPortfolio }, { status: 201 });
-  } catch (error: any) {
-    console.error("Error saving portfolio:", error?.message || error);
-    return NextResponse.json({ success: false, error: error?.message || "Failed to save portfolio" }, { status: 500 });
+  } catch (error: unknown) { // ✅ Fix: Use `unknown` instead of `any`
+    const errorMessage = error instanceof Error ? error.message : "Failed to save portfolio";
+    console.error("Error saving portfolio:", errorMessage);
+    
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
-
 }

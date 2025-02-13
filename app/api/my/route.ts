@@ -3,10 +3,10 @@ import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(){
+export async function GET() {
     const session = await getServerSession(NEXT_AUTH_CONFIG);
     if (!session) {
-        return new NextResponse ( JSON.stringify({error: "Unauthorized"}), {status:403} );
+        return new NextResponse(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
     }
     try {
         const portfolio = await db.portfolio.findMany({
@@ -16,31 +16,40 @@ export async function GET(){
             include: {
                 stocks: true,
             },
-        })
+        });
 
-        return new NextResponse ( JSON.stringify(portfolio), {status:200} );
+        return new NextResponse(JSON.stringify(portfolio), { status: 200 });
     } catch (error) {
-        return new NextResponse ( JSON.stringify({error: "Failed to fetch portfolio"}), {status:500} );
+        console.error("Error fetching portfolio:", error); // ✅ Fix: Log the error
+        return new NextResponse(
+            JSON.stringify({ error: "Failed to fetch portfolio", details: String(error) }), 
+            { status: 500 }
+        );
     }
 }
 
-export async function DELETE(req:NextRequest){
+export async function DELETE(req: NextRequest) {
     const session = await getServerSession(NEXT_AUTH_CONFIG);
     const body = await req.json();
     const { id } = body;
+
     if (!session) {
-        return new NextResponse ( JSON.stringify({error: "Unauthorized"}), {status:403} );
+        return new NextResponse(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
     }
     try {
         const portfolio = await db.portfolio.delete({
             where: {
                 userId: Number(session.user.id),
-                id: id
-            }
-        })
+                id: id,
+            },
+        });
 
-        return new NextResponse ( JSON.stringify(portfolio), {status:200} );
+        return new NextResponse(JSON.stringify(portfolio), { status: 200 });
     } catch (error) {
-        return new NextResponse ( JSON.stringify({error: "Failed to fetch portfolio"}), {status:500} );
+        console.error("Error deleting portfolio:", error); // ✅ Fix: Log the error
+        return new NextResponse(
+            JSON.stringify({ error: "Failed to delete portfolio", details: String(error) }), 
+            { status: 500 }
+        );
     }
 }

@@ -34,8 +34,12 @@ export default function Signin() {
       } else {
         router.push("/dashboard");
       }
-    } catch (err:any) {
-      seterror(err.response?.data?.error || "Something went wrong. Please try again.");
+    } catch (err: unknown) { 
+      if (err instanceof Error) {
+        seterror(err.message);
+      } else {
+        seterror("Something went wrong. Please try again.");
+      }
     }
     finally{
       setloading(false);

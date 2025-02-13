@@ -33,8 +33,12 @@ export default function Signup() {
       await axios.post("/api/user", {email,password,username});
       alert("Account Created Successfully. Please Login to continue.");
       router.push("/signin")
-    } catch (err:any) {
-      seterror(err.response?.data?.error || "Something went wrong. Please try again."); 
+    } catch (err: unknown) { 
+      if (err instanceof Error) {
+        seterror(err.message);
+      } else {
+        seterror("Something went wrong. Please try again.");
+      }
     }
     finally{
       setloading(false);

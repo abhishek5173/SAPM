@@ -20,7 +20,7 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "abhishek@gmail.com" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
 
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Please enter your email and password');

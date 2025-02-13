@@ -3,6 +3,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CgClose } from "react-icons/cg";
+import { span } from "framer-motion/client";
+import { BiDownArrow, BiUpArrow } from "react-icons/bi";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function MyPortfolio() {
   interface Stockitem {
@@ -30,7 +41,8 @@ export default function MyPortfolio() {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioItem | null>(null);
+  const [selectedPortfolio, setSelectedPortfolio] =
+    useState<PortfolioItem | null>(null);
   const [stockPrices, setStockPrices] = useState<StockData[]>([]);
 
   useEffect(() => {
@@ -61,7 +73,9 @@ export default function MyPortfolio() {
   }, []);
 
   function handleDelete(id: string) {
-    const userConfirmed = window.confirm("Are you sure you want to cancel this portfolio?");
+    const userConfirmed = window.confirm(
+      "Are you sure you want to cancel this portfolio?"
+    );
     if (!userConfirmed) return;
 
     axios.delete("/api/my", { data: { id } }).then(() => {
@@ -69,16 +83,50 @@ export default function MyPortfolio() {
     });
   }
 
+  const chartData = selectedPortfolio
+    ? selectedPortfolio.stocks.map((stock) => {
+        const currentStock = stockPrices.find(
+          (s) => s.Stock === stock.stockName
+        );
+        return {
+          name: stock.stockName,
+          investment: stock.price * stock.quantity,
+          currentValue: currentStock ? currentStock.Price * stock.quantity : 0,
+        };
+      })
+    : [];
+
+  const totalCurrentPrice = selectedPortfolio
+    ? selectedPortfolio.stocks.reduce((acc, stock) => {
+        const currentStock = stockPrices.find(
+          (s) => s.Stock === stock.stockName
+        );
+        return acc + (currentStock ? currentStock.Price * stock.quantity : 0);
+      }, 0)
+    : 0;
+
+  const percentageChange =
+    selectedPortfolio && totalCurrentPrice && selectedPortfolio.totalPrice
+      ? ((totalCurrentPrice - selectedPortfolio.totalPrice) /
+          selectedPortfolio.totalPrice) *
+        100
+      : 0;
+
   return (
     <div className="flex flex-col items-center w-full bg-white p-6">
-      <h1 className="text-3xl font-bold text-green-700 mb-6">📈 My Portfolios</h1>
+      <h1 className="text-3xl font-bold text-green-700 mb-6">
+        📈 My Portfolios
+      </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
         {loading
           ? Array(6)
               .fill(0)
               .map((_, index) => (
-                <div key={index} className="bg-gray-100 shadow-md rounded-lg p-6 animate-pulse">
+                <div
+                  key={index}
+                  className="bg-gray-100 shadow-md rounded-lg p-6 animate-pulse"
+                >
                   <div className="h-6 w-2/3 bg-gray-300 rounded mb-4"></div>
                   <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
                 </div>
@@ -117,19 +165,94 @@ export default function MyPortfolio() {
           <div className="w-full max-w-screen-lg h-[90vh] bg-white shadow-2xl rounded-3xl p-6 overflow-auto relative">
             <div className="flex justify-between items-center border-b pb-4">
               <h1 className="text-2xl font-bold text-green-700">
-                {selectedPortfolio.name.charAt(0).toUpperCase() + selectedPortfolio.name.slice(1)} : Portfolio Details
+                {selectedPortfolio.name.charAt(0).toUpperCase() +
+                  selectedPortfolio.name.slice(1)}{" "}
+                : Portfolio Details
               </h1>
-              <button onClick={() => setDialogOpen(false)} className="text-gray-700 hover:text-red-600">
+              <button
+                onClick={() => setDialogOpen(false)}
+                className="text-gray-700 hover:text-red-600"
+              >
                 <CgClose className="h-8 w-8" />
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
               <div className="bg-gray-100 h-64 flex items-center justify-center rounded-lg">
-                <p className="text-gray-500">Chart/Graph Area</p>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                  >
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <YAxis tickFormatter={(value) => `₹${value}`} />
+                    <Tooltip formatter={(value) => `₹${value}`} />
+                    <Legend />
+                    <Bar
+                      dataKey="investment"
+                      fill="#8884d8"
+                      name="Investment"
+                    />
+                    <Bar
+                      dataKey="currentValue"
+                      fill="#82ca9d"
+                      name="Current Value"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <div className="bg-gray-100 h-64 flex items-center justify-center rounded-lg">
-                <p className="text-gray-500">Portfolio Info</p>
+              <div className="bg-gray-100 h-64 flex flex-col items-start justify-center rounded-lg">
+                <p className="p-2 text-green-600 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
+                  <span className="text-black">Total Investment:</span> ₹
+                  {selectedPortfolio.totalPrice}
+                </p>
+                <p className="p-2 text-green-600 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
+                  <span className="text-black">Date:</span>{" "}
+                  {new Date(selectedPortfolio.createdAt).toLocaleString()}
+                </p>
+
+                <p className="p-2 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
+                  <span className="text-black">Total Current Price:</span>{" "}
+                  {totalCurrentPrice < selectedPortfolio.totalPrice ? (
+                    <span className="text-red-600">
+                      ₹{totalCurrentPrice.toFixed(2)}{" "}
+                      <span className="text-red-600 inline-block ">
+                        <BiDownArrow />
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-green-600">
+                      ₹{totalCurrentPrice.toFixed(2)}{" "}
+                      <span className="inline-block text-green-600">
+                        <BiUpArrow />
+                      </span>
+                    </span>
+                  )}
+                </p>
+                <p
+                  className={`p-2 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left ${
+                    percentageChange >= 0 ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  Change: {percentageChange.toFixed(2)}%{" "}
+                  {selectedPortfolio.totalPrice > totalCurrentPrice ? (
+                    <span className="text-red-600">
+                      (-₹
+                      {(
+                        selectedPortfolio.totalPrice - totalCurrentPrice
+                      ).toFixed(2)}
+                      )
+                    </span>
+                  ) : (
+                    <span className="text-green-600">
+                      (+₹
+                      {(
+                        totalCurrentPrice - selectedPortfolio.totalPrice
+                      ).toFixed(2)}
+                      )
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
 
@@ -145,32 +268,51 @@ export default function MyPortfolio() {
                           <th className="border p-2">Stock</th>
                           <th className="border p-2">Price</th>
                           <th className="border p-2">Qty</th>
-                          <th className="border p-2">Total</th>
+                          <th className="border p-2">Invested</th>
                           <th className="border p-2">Current Price</th>
+                          <th className="border p-2">Current Value</th>
                         </tr>
                       </thead>
                       <tbody>
                         {selectedPortfolio.stocks.map((stock) => {
-                          const currentStock = stockPrices.find((s) => s.Stock === stock.stockName);
+                          const currentStock = stockPrices.find(
+                            (s) => s.Stock === stock.stockName
+                          );
                           return (
-                            <tr key={stock.id} className="text-center text-xs sm:text-sm md:text-base">
-                              <td className="border p-2 text-wrap">{stock.stockName}</td>
+                            <tr
+                              key={stock.id}
+                              className="text-center text-xs sm:text-sm md:text-base"
+                            >
+                              <td className="border p-2 text-wrap">
+                                {stock.stockName}
+                              </td>
                               <td className="border p-2">₹{stock.price}</td>
                               <td className="border p-2">{stock.quantity}</td>
-                              <td className="border p-2">₹{stock.price * stock.quantity}</td>
-                              <td className="border p-2">{currentStock ? `₹${currentStock.Price}` : "Loading"}</td>
+                              <td className="border p-2">
+                                ₹{stock.price * stock.quantity}
+                              </td>
+                              <td className="border p-2">
+                                {currentStock
+                                  ? `₹${currentStock.Price}`
+                                  : "Loading"}
+                              </td>
+                              <td className="border p-2">
+                                {currentStock && currentStock.Price * stock.quantity > stock.price * stock.quantity ? (
+                                  <div className="text-green-600">
+                                    ₹{currentStock.Price * stock.quantity}
+                                  </div>
+                                ) : (
+                                  <div className="text-red-600">
+                                    {currentStock ? `₹${currentStock.Price * stock.quantity}` : "Loading"}
+                                  </div>
+                                )}
+                              </td>
                             </tr>
                           );
                         })}
                       </tbody>
                     </table>
                   </div>
-                  <p className="p-2 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
-                    Total Investment: ₹{selectedPortfolio.totalPrice}
-                  </p>
-                  <p className="p-2 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
-                    Date: {new Date(selectedPortfolio.createdAt).toLocaleString()}
-                  </p>
                 </div>
               )}
             </div>

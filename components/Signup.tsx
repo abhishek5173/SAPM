@@ -107,15 +107,7 @@ export default function Signup() {
           <div className="w-full h-px bg-gray-300"></div>
         </div>
 
-        <button onClick={async () => {
-            await signIn("google");}} className="w-full p-2 sm:p-3 bg-white text-green-600 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100 transition">
-          <img
-            src="https://www.svgrepo.com/show/355037/google.svg"
-            alt="Google Icon"
-            className="w-4 h-4 sm:w-5 sm:h-5"
-          />
-          Sign Up with Google
-        </button>
+        
         <div className="w-full flex justify-center items-center">
           <button onClick={() => router.push('/')} className="w-20 p-3 bg-green-600 text-white font-medium rounded-3xl hover:bg-green-700 transition duration-300 mt-5 flex justify-center">
             <svg

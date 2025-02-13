@@ -56,9 +56,7 @@ export default function Navbar() {
               >
                 Sign Out
               </button>
-              <button className="bg-white/45 text-green-600 hover:bg-green-700 hover:text-white transition duration-500 rounded-3xl p-2 font-medium">
-                Market
-              </button>
+              
             </>
           ) : (
             <>

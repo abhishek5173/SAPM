@@ -66,8 +66,8 @@ export default function Dashboard() {
 
     return {
       name: portfolio.name,
-      investment: portfolio.totalPrice,
-      currentValue: totalCurrentValue,
+      investment: portfolio.totalPrice.toFixed(2),
+      currentValue: totalCurrentValue.toFixed(2),
     };
   });
 
@@ -92,7 +92,7 @@ export default function Dashboard() {
             📊 Total Portfolio Value
           </h2>
           <p className="text-white text-3xl sm:text-4xl font-bold mt-2">
-          ₹{loading ? "⏳" : totalValue}
+          ₹{loading ? "⏳" : totalValue.toFixed(2)}
           </p>
         </div>
         <div className="bg-gradient-to-r from-green-500 to-green-700 p-6 sm:p-10 rounded-2xl shadow-lg text-center transform transition-all hover:scale-105 hover:shadow-xl">

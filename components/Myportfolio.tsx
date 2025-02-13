@@ -145,7 +145,7 @@ export default function MyPortfolio() {
                   {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
                 </h2>
                 <p className="sm:text-lg text-sm text-gray-700">
-                  <span className="font-bold">₹{p.totalPrice}</span>
+                  <span className="font-bold">₹{(p.totalPrice).toFixed(2)}</span>
                 </p>
                 <button
                   className="sm:p-2 p-1 text-sm sm:text-lg bg-red-700/90 rounded-2xl text-white font-semibold"
@@ -204,7 +204,7 @@ export default function MyPortfolio() {
               <div className="bg-gray-100 h-64 flex flex-col items-start justify-center rounded-lg">
                 <p className="p-2 text-green-600 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
                   <span className="text-black">Total Investment:</span> ₹
-                  {selectedPortfolio.totalPrice}
+                  {(selectedPortfolio.totalPrice).toFixed(2)}
                 </p>
                 <p className="p-2 text-green-600 font-bold text-sm sm:text-lg md:text-xl text-center sm:text-left">
                   <span className="text-black">Date:</span>{" "}
@@ -289,7 +289,7 @@ export default function MyPortfolio() {
                               <td className="border p-2">₹{stock.price}</td>
                               <td className="border p-2">{stock.quantity}</td>
                               <td className="border p-2">
-                                ₹{stock.price * stock.quantity}
+                                ₹{(stock.price * stock.quantity).toFixed(2)}
                               </td>
                               <td className="border p-2">
                                 {currentStock
@@ -299,11 +299,11 @@ export default function MyPortfolio() {
                               <td className="border p-2">
                                 {currentStock && currentStock.Price * stock.quantity > stock.price * stock.quantity ? (
                                   <div className="text-green-600">
-                                    ₹{currentStock.Price * stock.quantity}
+                                    ₹{(currentStock.Price * stock.quantity).toFixed(2)}
                                   </div>
                                 ) : (
                                   <div className="text-red-600">
-                                    {currentStock ? `₹${currentStock.Price * stock.quantity}` : "Loading"}
+                                    {currentStock ? `₹${(currentStock.Price * stock.quantity).toFixed(2)}` : "Loading"}
                                   </div>
                                 )}
                               </td>

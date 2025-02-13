@@ -228,7 +228,7 @@ export default function Portfolio() {
                           />
                         </td>
                         <td className="border p-2">
-                          ₹{item.price * item.quantity}
+                          ₹{(item.price * item.quantity).toFixed(2)}
                         </td>
                       </tr>
                     ))}
@@ -240,7 +240,7 @@ export default function Portfolio() {
             )}
 
             <div className="text-right font-bold text-lg mt-4">
-              Total: ₹{totalPrice}
+              Total: ₹{totalPrice.toFixed(2)}
             </div>
 
             <div className="mt-4 flex justify-between">

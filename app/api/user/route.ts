@@ -39,10 +39,10 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        const { password: _, ...user } = newuser; // ✅ Fix: Ignore password without renaming
+        const { password: _password, ...user } = newuser;
         return NextResponse.json({ user, message: "User created successfully" }, { status: 201 });
     } catch (error) {
-        console.error("Error creating user:", error); // ✅ Fix: Use error
+        console.error("Error creating user:", error); 
         return NextResponse.json({ message: "Something Went Wrong" }, { status: 500 });
     }
 }

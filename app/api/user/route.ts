@@ -38,9 +38,11 @@ export async function POST(req: NextRequest) {
                 password: hashedPassword,
             },
         });
-        return NextResponse.json({ message: "User created successfully" }, { status: 201 });
+
+        const user = { email: newuser.email, username: newuser.username }; // Manually exclude password
+        return NextResponse.json({ user, message: "User created successfully" }, { status: 201 });
     } catch (error) {
-        console.error("Error creating user:", error);
+        console.error("Error creating user:", error); 
         return NextResponse.json({ message: "Something Went Wrong" }, { status: 500 });
     }
 }

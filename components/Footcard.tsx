@@ -1,7 +1,7 @@
 
 interface Stock {
-    name:String;
-    price: String | number;
+    name:string;
+    price: string | number;
 }
 
 export default function Footcard({name,price}:Stock){

@@ -104,7 +104,7 @@ export default function Portfolio() {
     };
 
     try {
-      const response = await axios.post("/api/portfolio", payload);
+      await axios.post("/api/portfolio", payload);
 
       alert("Portfolio saved successfully!");
       resetSelections();

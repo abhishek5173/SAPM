@@ -1,7 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signIn } from 'next-auth/react';
 import { z } from "zod";
 import axios from "axios";
 
@@ -31,7 +30,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post("/api/user", {email,password,username});
+      await axios.post("/api/user", {email,password,username});
       alert("Account Created Successfully. Please Login to continue.");
       router.push("/signin")
     } catch (err:any) {

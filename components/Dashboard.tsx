@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-import { div } from "framer-motion/client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {

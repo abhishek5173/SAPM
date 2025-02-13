@@ -3,7 +3,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CgClose } from "react-icons/cg";
-import { span } from "framer-motion/client";
 import { BiDownArrow, BiUpArrow } from "react-icons/bi";
 import {
   BarChart,

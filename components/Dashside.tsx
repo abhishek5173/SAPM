@@ -1,10 +1,10 @@
 "use client"
-import { useRouter } from "next/navigation";
+
 import { Home, FilePlus2, AlignHorizontalDistributeCenter } from "lucide-react";
 import Link from "next/link";
 
 export default function Dashside() {
-    const router = useRouter();
+   
     return (
         <div className="bg-gradient-to-b from-green-500 to-green-700 w-16 sm:w-2/12 h-screen flex justify-center py-8 shadow-2xl rounded-e-md">
         <div className="w-full px-4 space-y-6">

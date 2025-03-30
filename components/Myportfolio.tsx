@@ -35,6 +35,10 @@ export default function MyPortfolio() {
     Cap: string;
     Stock: string;
     Price: number;
+    PE: number;
+    EPS: number;
+    High52: number;
+    Low52: number;
   }
 
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
@@ -43,6 +47,8 @@ export default function MyPortfolio() {
   const [selectedPortfolio, setSelectedPortfolio] =
     useState<PortfolioItem | null>(null);
   const [stockPrices, setStockPrices] = useState<StockData[]>([]);
+  const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
+  const [isStockDialogOpen, setStockDialogOpen] = useState(false);
 
   useEffect(() => {
     async function fetchPortfolio() {
@@ -80,6 +86,14 @@ export default function MyPortfolio() {
     axios.delete("/api/my", { data: { id } }).then(() => {
       setPortfolio((prev) => prev.filter((p) => p.id !== id));
     });
+  }
+
+  function handleStockClick(stockName: string) {
+    const stock = stockPrices.find((s) => s.Stock === stockName);
+    if (stock) {
+      setSelectedStock(stock);
+      setStockDialogOpen(true);
+    }
   }
 
   const chartData = selectedPortfolio
@@ -144,7 +158,7 @@ export default function MyPortfolio() {
                   {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
                 </h2>
                 <p className="sm:text-lg text-sm text-gray-700">
-                  <span className="font-bold">₹{(p.totalPrice).toFixed(2)}</span>
+                  <span className="font-bold">₹{p.totalPrice.toFixed(2)}</span>
                 </p>
                 <button
                   className="sm:p-2 p-1 text-sm sm:text-lg bg-red-700/90 rounded-2xl text-white font-semibold"
@@ -282,7 +296,10 @@ export default function MyPortfolio() {
                               key={stock.id}
                               className="text-center text-xs sm:text-sm md:text-base"
                             >
-                              <td className="border p-2 text-wrap">
+                              <td
+                                className="border p-2 text-blue-600 cursor-pointer underline"
+                                onClick={() => handleStockClick(stock.stockName)}
+                              >
                                 {stock.stockName}
                               </td>
                               <td className="border p-2">₹{stock.price}</td>
@@ -318,6 +335,73 @@ export default function MyPortfolio() {
           </div>
         </div>
       )}
+
+{isStockDialogOpen && selectedStock && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-green-700">
+          {selectedStock.Stock} Details
+        </h2>
+        <button
+          onClick={() => setStockDialogOpen(false)}
+          className="text-gray-700 hover:text-red-600"
+        >
+          <CgClose className="h-6 w-6" />
+        </button>
+      </div>
+      <div className="space-y-4">
+        <p>
+          <span className="font-bold">PE Ratio:</span> {selectedStock.PE}{" "}
+          {selectedStock.PE < 15 ? (
+            <span className="text-green-600">(Undervalued)</span>
+          ) : selectedStock.PE > 25 ? (
+            <span className="text-red-600">(Overvalued)</span>
+          ) : (
+            <span className="text-yellow-600">(Fairly Valued)</span>
+          )
+          }<span className="text-gray-600 ml-3">(Range: 15 to 25)</span>
+        </p>
+        <p>
+          <span className="font-bold">EPS:</span> {selectedStock.EPS}{" "}
+          {selectedStock.EPS > 10 ? (
+            <span className="text-green-600">(Strong Earnings)</span>
+          ) : (
+            <span className="text-red-600">(Weak Earnings)</span>
+          )}    <span className="text-gray-600 ml-3">(Range: More than 10)</span>
+        </p>
+        <p>
+          <span className="font-bold">52-Week High:</span> ₹{selectedStock.High52}
+        </p>
+        <p>
+          <span className="font-bold">52-Week Low:</span> ₹{selectedStock.Low52}
+        </p>
+        <p>
+          <span className="font-bold">Price:</span> ₹{selectedStock.Price}
+        </p>
+        <p>
+          <span className="font-bold">Volatility:</span>{" "}
+          {selectedStock.High52 - selectedStock.Low52 > selectedStock.Low52 * 0.5 ? (
+            <span className="text-red-600">High (Risky)</span>
+          ) : (
+            <span className="text-green-600">Moderate (Stable)</span>
+          )}
+        </p>
+        <div className="mt-4 p-3 rounded-md bg-gray-100">
+          <h3 className="text-lg font-bold">Recommendation:</h3>
+          {selectedStock.PE < 15 && selectedStock.EPS > 10 ? (
+            <p className="text-green-700 font-semibold">✅ Strong Buy - Great valuation and earnings!</p>
+          ) : selectedStock.PE > 25 ? (
+            <p className="text-red-700 font-semibold">❌ Overvalued - Not a good buy right now.</p>
+          ) : (
+            <p className="text-yellow-700 font-semibold">⚠️ Hold - Wait for better entry points.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

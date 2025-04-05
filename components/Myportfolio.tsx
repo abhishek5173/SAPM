@@ -11,9 +11,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
+  ResponsiveContainer
 } from "recharts";
 
 export default function MyPortfolio() {

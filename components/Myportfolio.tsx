@@ -284,6 +284,8 @@ export default function MyPortfolio() {
                           <th className="border p-2">Invested</th>
                           <th className="border p-2">Current Price</th>
                           <th className="border p-2">Current Value</th>
+                          <th className="border p-2">Total Profit/Loss</th>
+                          <th className="border p-2">Stock Value</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -321,6 +323,36 @@ export default function MyPortfolio() {
                                   <div className="text-red-600">
                                     {currentStock ? `₹${(currentStock.Price * stock.quantity).toFixed(2)}` : "Loading"}
                                   </div>
+                                )}
+                              </td>
+                              <td className="border p-2">
+                                {currentStock ? (
+                                currentStock.Price * stock.quantity - stock.price * stock.quantity > 0 ? (
+                                  <div className="text-green-600">
+                                  ₹{(currentStock.Price * stock.quantity - stock.price * stock.quantity).toFixed(2)} (Profit)
+                                  </div>
+                                ) : (
+                                  <div className="text-red-600">
+                                  ₹{(currentStock.Price * stock.quantity - stock.price * stock.quantity).toFixed(2)} (Loss)
+                                  </div>
+                                )
+                                ) : (
+                                <div className="text-gray-600">Loading</div>
+                                )}
+                              </td>
+                              <td className="border p-2">
+                                {currentStock ? (
+                                currentStock.Price  - stock.price  > 0 ? (
+                                  <div className="text-green-600">
+                                  ₹{(currentStock.Price  - stock.price).toFixed(2)} (Gain)
+                                  </div>
+                                ) : (
+                                  <div className="text-red-600">
+                                  ₹{(currentStock.Price - stock.price).toFixed(2)} (Loss)
+                                  </div>
+                                )
+                                ) : (
+                                <div className="text-gray-600">Loading</div>
                                 )}
                               </td>
                             </tr>

@@ -12,6 +12,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
 } from "recharts";
 
 export default function MyPortfolio() {
@@ -20,6 +22,8 @@ export default function MyPortfolio() {
     stockName: string;
     price: number;
     quantity: number;
+    Low52: number;
+    "52_Week_Low"?: number; // Add this property to match the data structure
   }
 
   interface PortfolioItem {
@@ -49,6 +53,10 @@ export default function MyPortfolio() {
   const [stockPrices, setStockPrices] = useState<StockData[]>([]);
   const [selectedStock, setSelectedStock] = useState<StockData | null>(null);
   const [isStockDialogOpen, setStockDialogOpen] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+const [showHighList, setShowHighList] = useState(false);
+const [showLowList, setShowLowList] = useState(false);
+
 
   useEffect(() => {
     async function fetchPortfolio() {
@@ -182,6 +190,12 @@ export default function MyPortfolio() {
                   selectedPortfolio.name.slice(1)}{" "}
                 : Portfolio Details
               </h1>
+              <button
+                onClick={() => setShowAnalysis(!showAnalysis)}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300"
+              >
+                {showAnalysis ? "Hide Analysis" : "Show Sector & Cap Analysis"}
+              </button>
               <button
                 onClick={() => setDialogOpen(false)}
                 className="text-gray-700 hover:text-red-600"
@@ -433,6 +447,229 @@ export default function MyPortfolio() {
     </div>
   </div>
 )}
+
+{showAnalysis && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+    <div className="w-full max-w-screen-lg h-[90vh] bg-white shadow-2xl rounded-3xl p-6 overflow-auto relative">
+      
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-green-700">Portfolio Analysis</h2>
+        <button onClick={() => setShowAnalysis(false)} className="text-gray-700 hover:text-red-600 transition">
+          <CgClose className="h-7 w-7" />
+        </button>
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Sector-wise Distribution */}
+        <div className="bg-gray-50 rounded-xl p-5 shadow-inner flex flex-col h-[450px]">
+          <h3 className="text-xl font-semibold text-green-700 mb-3">Sector-wise Distribution</h3>
+          <div className="flex-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={
+                  selectedPortfolio?.stocks.reduce((acc, stock) => {
+                    const currentStock = stockPrices.find(s => s.Stock.trim().toLowerCase() === stock.stockName.trim().toLowerCase());
+                    if (currentStock) {
+                      const sector = currentStock.Sector || "Unknown";
+                      const value = stock.price * stock.quantity;
+                      const existing = acc.find(item => item.name === sector);
+                      if (existing) {
+                        existing.value += value;
+                      } else {
+                        acc.push({ name: sector, value });
+                      }
+                    }
+                    return acc;
+                  }, [] as { name: string; value: number }[]) || []
+                }
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
+              >
+                <XAxis type="number" tickFormatter={(v) => `₹${v}`} />
+                <YAxis dataKey="name" type="category" width={120} />
+                <Tooltip formatter={(value) => `₹${value}`} />
+                <Bar dataKey="value" fill="#34d399" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Summary */}
+          <div className="mt-3 text-sm text-gray-700">
+            {(() => {
+              const data = selectedPortfolio?.stocks.reduce((acc, stock) => {
+                const currentStock = stockPrices.find(s => s.Stock.trim().toLowerCase() === stock.stockName.trim().toLowerCase());
+                if (currentStock) {
+                  const sector = currentStock.Sector || "Unknown";
+                  const value = stock.price * stock.quantity;
+                  acc[sector] = (acc[sector] || 0) + value;
+                }
+                return acc;
+              }, {} as Record<string, number>);
+              if (!data) return null;
+              const total = Object.values(data).reduce((a, b) => a + b, 0);
+              const top = Object.entries(data).reduce((prev, curr) => curr[1] > prev[1] ? curr : prev);
+              const sorted = Object.values(data).sort((a, b) => b - a);
+              const top3 = sorted.slice(0, 3).reduce((a, b) => a + b, 0);
+              return (
+                <>
+                  <p>Total Investment: <span className="font-medium">₹{total.toFixed(2)}</span></p>
+                  <p>Top Sector: <span className="font-medium">{top[0]}</span> (₹{top[1].toFixed(2)})</p>
+                  <p>Top 3 Sector Concentration: <span className="font-medium">{((top3 / total) * 100).toFixed(2)}%</span></p>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+
+        {/* Cap-wise Distribution */}
+        <div className="bg-gray-50 rounded-xl p-5 shadow-inner flex flex-col h-[450px]">
+          <h3 className="text-xl font-semibold text-green-700 mb-3">Cap-wise Distribution</h3>
+          <div className="flex-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={
+                  selectedPortfolio?.stocks.reduce((acc, stock) => {
+                    const currentStock = stockPrices.find(s => s.Stock.trim().toLowerCase() === stock.stockName.trim().toLowerCase());
+                    if (currentStock) {
+                      const cap = currentStock.Cap || "Unknown";
+                      const value = stock.price * stock.quantity;
+                      const existing = acc.find(item => item.name === cap);
+                      if (existing) {
+                        existing.value += value;
+                      } else {
+                        acc.push({ name: cap, value });
+                      }
+                    }
+                    return acc;
+                  }, [] as { name: string; value: number }[]) || []
+                }
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
+              >
+                <XAxis type="number" tickFormatter={(v) => `₹${v}`} />
+                <YAxis dataKey="name" type="category" width={100} />
+                <Tooltip formatter={(value) => `₹${value}`} />
+                <Bar dataKey="value" fill="#60a5fa" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Summary */}
+          <div className="mt-3 text-sm text-gray-700">
+            {(() => {
+              const data = selectedPortfolio?.stocks.reduce((acc, stock) => {
+                const currentStock = stockPrices.find(s => s.Stock.trim().toLowerCase() === stock.stockName.trim().toLowerCase());
+                if (currentStock) {
+                  const cap = currentStock.Cap || "Unknown";
+                  const value = stock.price * stock.quantity;
+                  acc[cap] = (acc[cap] || 0) + value;
+                }
+                return acc;
+              }, {} as Record<string, number>);
+              if (!data) return null;
+              const total = Object.values(data).reduce((a, b) => a + b, 0);
+              const top = Object.entries(data).reduce((prev, curr) => curr[1] > prev[1] ? curr : prev);
+              const sorted = Object.values(data).sort((a, b) => b - a);
+              const top3 = sorted.slice(0, 3).reduce((a, b) => a + b, 0);
+              return (
+                <>
+                  <p>Total Investment: <span className="font-medium">₹{total.toFixed(2)}</span></p>
+                  <p>Top Cap: <span className="font-medium">{top[0]}</span> (₹{top[1].toFixed(2)})</p>
+                  <p>Top 3 Cap Concentration: <span className="font-medium">{((top3 / total) * 100).toFixed(2)}%</span></p>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      </div>
+
+      {/* Global Insights */}
+      {/* Global Insights */}
+<div className="mt-6 p-4 bg-gray-100 rounded-xl text-sm text-gray-800">
+  <h4 className="text-lg font-semibold text-green-700 mb-2">Overall Portfolio Insights</h4>
+  {(() => {
+    const allStocks = selectedPortfolio?.stocks.map(stock => {
+      const stockInfo = stockPrices.find(s => s.Stock === stock.stockName);
+      return {
+        ...stock,
+        total: stock.price * stock.quantity,
+        PE: stockInfo?.PE || 0,
+        EPS: stockInfo?.EPS || 0,
+        high: stockInfo?.High52 || 0,
+        low: stockInfo?.Low52 || 0
+      };
+    }) || [];
+
+    const totalQty = allStocks.reduce((sum, s) => sum + s.quantity, 0);
+    const totalVal = allStocks.reduce((sum, s) => sum + s.total, 0);
+    const avgInvestment = totalVal / (allStocks.length || 1);
+
+    const sorted = [...allStocks].sort((a, b) => b.total - a.total);
+    const highest = sorted[0];
+    const lowest = sorted[sorted.length - 1];
+
+    const peList = allStocks.map(s => s.PE).filter(Boolean);
+    const epsList = allStocks.map(s => ({ stockName: s.stockName, EPS: s.EPS })).sort((a, b) => b.EPS - a.EPS);
+    const nearHigh = allStocks.filter(s => s.price >= s.high * 0.9);
+    const nearHighCount = nearHigh.length;
+    const nearLow = allStocks.filter(s => s.price <= s.low * 1.1);
+    const nearLowCount = allStocks.filter(s => s.price <= s.low * 1.1).length;
+    const avgPE = peList.reduce((a, b) => a + b, 0) / (peList.length || 1);
+    const avgEPS = epsList.reduce((a, b) => a + b.EPS, 0) / (epsList.length || 1);
+
+    return (
+      <>
+        <p>Unique Stocks: <span className="font-medium">{allStocks.length}</span></p>
+        <p>Average Investment per Stock: <span className="font-medium">₹{avgInvestment.toFixed(2)}</span></p>
+        <p>Highest Holding: <span className="font-medium">{highest.stockName}</span> (₹{highest.total.toFixed(2)})</p>
+        <p>Lowest Holding: <span className="font-medium">{lowest.stockName}</span> (₹{lowest.total.toFixed(2)})</p>
+        <p>Total Quantity of Stocks: <span className="font-medium">{totalQty}</span></p>
+        <hr className="my-2" />
+        <p>Average P/E Ratio: <span className="font-medium">{avgPE.toFixed(2)}</span> {avgPE > 25 ? "(Overvalued)" : avgPE < 10 ? "(Undervalued)" : "(Fairly Valued)"}</p>
+        <p>Average EPS: <span className="font-medium">{avgEPS.toFixed(2)}</span></p>
+        <p>Top EPS: <span className="font-medium">{epsList[0].stockName}</span> ({epsList[0].EPS.toFixed(2)})</p>
+        <p>Stocks near 52-week high: <span className="font-medium">{nearHighCount}</span> <button
+        onClick={() => setShowHighList(prev => !prev)}
+        className="text-blue-600 text-xs underline hover:text-blue-800"
+      >
+        {showHighList ? "Hide list" : "Show list"}
+      </button></p>    {showHighList && (
+      <ul className="mt-1 ml-4 list-disc text-gray-600">
+        {nearHigh.map(stock => (
+          <li key={stock.stockName}>
+            {stock.stockName} — ₹{stock.price.toFixed(2)} (High: ₹{stock.high})
+          </li>
+        ))}
+      </ul>
+    )}
+        <p>Stocks near 52-week low: <span className="font-medium">{nearLowCount}</span><button
+        onClick={() => setShowLowList(prev => !prev)}
+        className="text-blue-600 text-xs underline hover:text-blue-800"
+      >
+        {showLowList ? "Hide list" : "Show list"}
+      </button></p>  {showLowList && (
+      <ul className="mt-1 ml-4 list-disc text-gray-600">
+        {nearLow.map(stock => (
+          <li key={stock.stockName}>
+            {stock.stockName} — ₹{stock.price.toFixed(2)} (Low: ₹{stock.low})
+          </li>
+        ))}
+      </ul>
+    )}
+      </>
+    );
+  })()}
+</div>
+
+    </div>
+  </div>
+)}
+
+
+
+
 
     </div>
   );

@@ -102,10 +102,10 @@ export default function Portfolio() {
       totalPrice: totalPrice,
       selectedStocks,
     };
-    setloading(true);
+    setLoading(true);
     try {
       await axios.post("/api/portfolio", payload);
-      setloading(false);
+      setLoading(false);
       alert("Portfolio saved successfully!");
       resetSelections();
       setIsDialogOpen(false);

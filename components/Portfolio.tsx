@@ -102,10 +102,10 @@ export default function Portfolio() {
       totalPrice: totalPrice,
       selectedStocks,
     };
-
+    setloading(true);
     try {
       await axios.post("/api/portfolio", payload);
-
+      setloading(false);
       alert("Portfolio saved successfully!");
       resetSelections();
       setIsDialogOpen(false);
@@ -258,9 +258,10 @@ export default function Portfolio() {
               </button>
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                disabled={loading}
                 onClick={savePortfolio}
               >
-                Save Portfolio
+                {loading ? "Saving" : "Save PortFolio"}
               </button>
             </div>
           </div>
